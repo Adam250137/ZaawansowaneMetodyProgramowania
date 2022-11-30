@@ -1,8 +1,23 @@
+T=$(wildcard src/*.cpp)
+NAME=$(basename $(notdir $T))
+OBJ = $(NAME:%=obj/%.o)
+LIBS = $(NAME:%=../libs/lib%.so)
 
+.SECONDARY:  $(OBJ)
 
-__start__: obj __lines_for_space__ ../libs/libInterp4Move.so ../libs/libInterp4Test.so 
-	@echo "  Tworzenie wtyczki zakonczone."
+.NONINTERMEDIATE: $(LIBS)
+
+plugin: obj __lines_for_space__ $(LIBS)
+	@echo "  Tworzenie wtyczek zakonczone."
 	@echo
+
+
+test:
+	@echo T: $T
+	@echo NAME: $(NAME)
+	@echo OBJ: $(OBJ)
+	@echo LIBS: $(LIBS)
+
 
 obj:
 	mkdir obj
@@ -12,36 +27,18 @@ LDFLAGS=-Wall -shared
 
 __lines_for_space__:
 	@echo
-	@echo
-	@echo
-	@echo
-	@echo
 
-../libs/libInterp4Test.so: obj/Interp4Test.o
-	g++ ${LDFLAGS} -o ../libs/libInterp4Test.so obj/Interp4Test.o
-	@echo
-	@echo "  Wtyczka dla polecenia 'Test' zostala utworzona."
-	@echo
-
-../libs/libInterp4Move.so: obj/Interp4Move.o
-	g++ ${LDFLAGS} -o ../libs/libInterp4Move.so obj/Interp4Move.o
-	@echo
-	@echo "  Wtyczka dla polecenia 'Move' zostala utworzona."
+../libs/lib%.so: obj/%.o
+	@g++ ${LDFLAGS} -o $@ $^
+	@echo "  Wtyczka $(subst Interp4,,$*) zostala utworzona."
 	@echo
 
 
-obj/Interp4Test.o: src/Interp4Test.cpp ../inc/Interp4Command.hh\
-                        inc/Interp4Test.hh 
-	g++ -c ${CPPFLAGS} -o obj/Interp4Test.o src/Interp4Test.cpp
-	
-
-obj/Interp4Move.o: src/Interp4Move.cpp ../inc/Interp4Command.hh\
-                        inc/Interp4Move.hh 
-	g++ -c ${CPPFLAGS} -o obj/Interp4Move.o src/Interp4Move.cpp
+obj/%.o: src/%.cpp ../inc/Interp4Command.hh inc/%.hh
+	@g++ -c ${CPPFLAGS} -o $@ $<
+	@echo Objekt $(subst Interp4,,$*) został utworzony
 
 
 clean:
-	rm -f obj/*
-
-cleanall: clean
-	find . -name \*~ -print -exec rm {} \;
+	@echo Usuwanie: $(wildcard obj/*)
+	@rm -f obj/*

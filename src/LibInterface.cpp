@@ -7,7 +7,7 @@ LibInterface::LibInterface( const char* libName ){
 	LibHandler = dlopen(libName,RTLD_LAZY);
 
 	if (!LibHandler) {
-		cerr << "!!! Brak biblioteki: Interp4Move.so" << endl;
+		cerr << "!!! Brak biblioteki: " << libName << endl;
 	}
 
 	void* pFun;

@@ -426,7 +426,7 @@ std::ostream & operator << ( std::ostream &OStrm, const geom::Vector<Type,Size> 
 {
   OStrm << "(" << V[0];
    for (unsigned int Ind = 1; Ind < Size; ++Ind) {
-     OStrm << ", " << V[Ind];
+     OStrm << "," << V[Ind];
    }
    OStrm << ")";
    return OStrm;
